@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import { json } from 'express'
 import dotenv from 'dotenv'
 import connectDB from './utils/db.js'
+import userRoute from "./routes/user.route.js"
 dotenv.config({})
 
 const app = express()
@@ -18,6 +19,8 @@ const corsOptions = {
    credentials: true
 }
 app.use(cors(corsOptions))
+
+app.use("/api/v1/user", userRoute)
 
 
 

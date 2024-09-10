@@ -90,7 +90,7 @@ export const login = async (req, res) => {
 //Account Logout
 export const logout = async (_, res) => {
   try {
-    return res.cookie('token', "", {maxAge:0}).json({
+    return res.cookie('token', " ", {maxAge:0}).json({
       message: 'Logged out Successfully.',
       success: true,
     })
@@ -148,5 +148,70 @@ export const editProfile = async (req, res) => {
     })
   }catch(error){
     console.log(error)
+  }
+}
+
+// get suggested user
+export const getSuggestedUser = async (req, res) => {
+  try {
+    const suggestedUsers = await User.find({_id:{$ne:req.id}}).select("-password")
+    if(!suggestedUsers) {
+      return res.status(400).json({
+        message: "currently do not have any user.",
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      users: suggestedUsers
+    })
+
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// follow and unfollow
+export const followOrUnfollow = async (req, res) => {
+  try {
+    const followKarneWala = req.id; 
+    const jiskoFollowKarunga = req.params.id;
+    if(followKarneWala === jiskoFollowKarunga){
+      return res.status(400).json({
+        message: 'You cannot follow/unfollow yourself',
+        success: false
+      })
+    }
+    const user = await User.findById(followKarneWala)
+    const targetUser = await User.findById(jiskoFollowKarunga)
+
+    if(!user || !targetUser){
+      return res.status(400).json({
+        message: 'User not found',
+        success: false
+      })
+    }
+   
+    // check to follow or unfollow
+
+    const isFollowing = user.following.includes(jiskoFollowKarunga)
+    if(isFollowing){
+      // unfollow logic
+      await Promise.all([
+        User.updateOne({_id:followKarneWala}, {$pull:{following: jiskoFollowKarunga}}),
+        User.updateOne({_id:jiskoFollowKarunga}, {$pull:{followers: followKarneWala}})
+      ])
+      return res.status(200).json({message:'unfollowed successfully', success: true})
+    }else{
+      // follow logic
+      await Promise.all([
+        User.updateOne({_id:followKarneWala}, {$push:{following: jiskoFollowKarunga}}),
+        User.updateOne({_id:jiskoFollowKarunga}, {$push:{followers: followKarneWala}})
+      ])
+      return res.status(200).json({message:'followed successfully', success: true})
+
+    }
+  } catch (error) {
+     console.log(error)
   }
 }

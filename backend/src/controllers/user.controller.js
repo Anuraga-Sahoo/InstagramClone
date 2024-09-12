@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import getDataUri from "../utils/datauri.js";
+import cloudinary from '../utils/cloudinary.js'
 
 
 // User Register
@@ -105,7 +106,7 @@ export const logout = async (_, res) => {
 export const getProfile = async (req, res) => {
   try {
     const userId = req.params.id
-    let user = await User.findById(userId);
+    let user = await User.findById(userId).select('-password');
     return res.status(200).json({
       user,
       success: true

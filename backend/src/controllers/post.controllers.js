@@ -191,6 +191,8 @@ export const getCommentsOfPost = async(req, res) => {
   }
 }
 
+
+// delete post
 export const deletePost = async (req, res) => {
   try {
     const postId = req.params.id;
@@ -222,5 +224,7 @@ export const deletePost = async (req, res) => {
 
 
 
+  } catch(err){
+    console.log(err)
   }
 }

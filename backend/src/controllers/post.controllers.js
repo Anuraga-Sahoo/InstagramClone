@@ -1,8 +1,8 @@
 import sharp from "sharp" // in this file we use sharp to optimized post image
-import cloudinary from "../utils/cloudinary"
+import cloudinary from "../utils/cloudinary.js"
 import { Post } from "../models/post.model.js"
 import { User } from "../models/user.model.js"
-import commentModel from "../models/comment.model.js"
+import commentModel, { Comment } from "../models/comment.model.js"
 
 
 // add new post
@@ -222,9 +222,38 @@ export const deletePost = async (req, res) => {
         message: 'Post deleted'
       })
 
-
-
   } catch(err){
     console.log(err)
+  }
+}
+
+// book marked post
+
+export const bookmarkPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const authorId = req.id;
+    const post = await Post.findById(postId)
+    if(!post) return res.status(484).json({message: 'Post not found', success: false});
+
+    const user = await User.findById(authorId)
+    if(user.bookmarks.includes(post._id)){
+
+      await user.updateOne({$pull: {bookmarks: post._id}})
+      await user.save()
+      return res.status(200).json({type: 'unsaved', message: 'Post removed from book marked', success: true})
+
+    }else{
+
+      await user.updateOne({$addToSet: {bookmarks: post._id}})
+      await user.save()
+      return res.status(200).json({type: 'Saved', message: 'Post bookmarked', success: true})
+
+    }
+
+
+
+  } catch (error) {
+    console.log(error)
   }
 }

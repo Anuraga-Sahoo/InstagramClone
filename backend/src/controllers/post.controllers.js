@@ -2,7 +2,8 @@ import sharp from "sharp" // in this file we use sharp to optimized post image
 import cloudinary from "../utils/cloudinary.js"
 import { Post } from "../models/post.model.js"
 import { User } from "../models/user.model.js"
-import commentModel, { Comment } from "../models/comment.model.js"
+import  { Comment } from "../models/comment.model.js"
+// import commentModel, { Comment } from "../models/comment.model.js"
 
 
 // add new post
